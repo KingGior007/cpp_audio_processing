@@ -4,6 +4,44 @@
 #include <vector>
 #include <iostream>
 
+class FMTChunk {
+private:
+    int sampleRate_;
+
+    int32_t subchunk1Size_;
+    int16_t audioFormat_; // PCM
+    int16_t numChannels_;
+    int32_t byteRate_;
+    int16_t blockAlign_;
+    int16_t bitsPerSample_;
+
+    template <typename T>
+    void write_bytes(std::ofstream& file, const T& value) const {
+        file.write(reinterpret_cast<const char*>(&value), sizeof(T));
+    }
+public:
+    FMTChunk(int sampleRate): sampleRate_(sampleRate) {
+        subchunk1Size_ = 16;
+        audioFormat_ = 1; // PCM
+        numChannels_ = 1;
+        byteRate_ = sampleRate * numChannels_ * sizeof(int16_t);
+        blockAlign_ = numChannels_ * sizeof(int16_t);
+        bitsPerSample_ = 8 * sizeof(int16_t);
+    }
+
+    void writeToFile(std::ofstream& file) const {
+        file.write("fmt ", 4);
+
+        write_bytes(file, subchunk1Size_);
+        write_bytes(file, audioFormat_);
+        write_bytes(file, numChannels_);
+        write_bytes(file, sampleRate_);
+        write_bytes(file, byteRate_);
+        write_bytes(file, blockAlign_);
+        write_bytes(file, bitsPerSample_);
+    }
+};
+
 class DataChunk {
 private:
     std::vector<int16_t> samples_;
@@ -42,6 +80,7 @@ class WavFile {
 private:
     int sampleRate_;
     DataChunk data_;
+    FMTChunk fmt_;
     template <typename T>
     void write_bytes(std::ofstream& file, const T& value) const {
         file.write(reinterpret_cast<const char*>(&value), sizeof(T));
@@ -49,7 +88,7 @@ private:
 
 public:
     WavFile(int sampleRate=defaultSampleRate):
-        sampleRate_(sampleRate), data_() {}
+        data_(), fmt_(sampleRate), sampleRate_(sampleRate) {}
 
     void addSample(const int16_t& sample) {
         data_.addSample(sample);
@@ -73,23 +112,11 @@ public:
         file.write("WAVE", 4);
 
         // fmt subchunk
-        file.write("fmt ", 4);
-        int32_t subchunk1Size = 16;
-        int16_t audioFormat = 1; // PCM
-        int16_t numChannels = 1;
-        int32_t byteRate = sampleRate_ * numChannels * sizeof(int16_t);
-        int16_t blockAlign = numChannels * sizeof(int16_t);
-        int16_t bitsPerSample = 8 * sizeof(int16_t);
+        fmt_.writeToFile(file);
 
-        write_bytes(file, subchunk1Size);
-        write_bytes(file, audioFormat);
-        write_bytes(file, numChannels);
-        write_bytes(file, sampleRate_);
-        write_bytes(file, byteRate);
-        write_bytes(file, blockAlign);
-        write_bytes(file, bitsPerSample);
-
+        // data chunk
         data_.writeToFile(file);
+
         file.close();
         return true;
     }

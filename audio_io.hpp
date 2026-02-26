@@ -77,8 +77,6 @@ public:
 };
 
 class WavFile {
-    static const int defaultSampleRate = 44100;
-
 private:
     int sampleRate_;
     DataChunk data_;
@@ -89,6 +87,7 @@ private:
     }
 
 public:
+    static const int defaultSampleRate = 44100;
     WavFile(int sampleRate=defaultSampleRate):
         data_(), fmt_(sampleRate), sampleRate_(sampleRate) {}
 

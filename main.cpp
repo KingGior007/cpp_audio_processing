@@ -4,13 +4,14 @@
 #include "audio_io.hpp"
 
 int main() {
-    const int sampleRate = 44100;
+    const int sampleRate = WavFile::defaultSampleRate;
+
     const int durationSeconds = 1;
     const double frequency = 261.625565; // C4
     const int16_t amplitude = 30000;
 
     // Create WavFile instance
-    WavFile wav(sampleRate);
+    WavFile wav{};
 
     // Generate samples for C4 note and add to WavFile
     const int numSamples = sampleRate * durationSeconds;

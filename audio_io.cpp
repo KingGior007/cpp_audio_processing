@@ -1,11 +1,13 @@
 #include "audio_io.hpp"
 
-// ---- FMTChunk ----
-template <typename T>
-void FMTChunk::write_bytes(std::ofstream& file, const T& value) const {
-    file.write(reinterpret_cast<const char*>(&value), sizeof(T));
+namespace {
+    template <typename T>
+    void write_bytes(std::ofstream& file, const T& value) {
+        file.write(reinterpret_cast<const char*>(&value), sizeof(T));
+    }
 }
 
+// ---- FMTChunk ----
 FMTChunk::FMTChunk(int sampleRate) : sampleRate_(sampleRate) {
     subchunk1Size_ = 16;
     audioFormat_ = 1; // PCM
@@ -27,11 +29,6 @@ void FMTChunk::writeToFile(std::ofstream& file) const {
 }
 
 // ---- DataChunk ----
-template <typename T>
-void DataChunk::write_bytes(std::ofstream& file, const T& value) const {
-    file.write(reinterpret_cast<const char*>(&value), sizeof(T));
-}
-
 void DataChunk::addSample(const int16_t& sample) {
     samples_.push_back(sample);
 }
@@ -54,11 +51,6 @@ size_t DataChunk::size() const {
 }
 
 // ---- WavFile ----
-template <typename T>
-void WavFile::write_bytes(std::ofstream& file, const T& value) const {
-    file.write(reinterpret_cast<const char*>(&value), sizeof(T));
-}
-
 WavFile::WavFile(int sampleRate) : data_(), fmt_(sampleRate), sampleRate_(sampleRate) {}
 
 void WavFile::addSample(const int16_t& sample) { data_.addSample(sample); }

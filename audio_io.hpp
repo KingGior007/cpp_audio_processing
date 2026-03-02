@@ -14,8 +14,6 @@ private:
     int32_t byteRate_;
     int16_t blockAlign_;
     int16_t bitsPerSample_;
-    template <typename T>
-    void write_bytes(std::ofstream& file, const T& value) const;
 public:
     FMTChunk(int sampleRate);
     void writeToFile(std::ofstream& file) const;
@@ -24,8 +22,6 @@ public:
 class DataChunk {
 private:
     std::vector<int16_t> samples_;
-    template <typename T>
-    void write_bytes(std::ofstream& file, const T& value) const;
 public:
     void addSample(const int16_t& sample);
     void addSamples(const std::vector<int16_t>& new_samples);
@@ -38,9 +34,6 @@ private:
     int sampleRate_;
     DataChunk data_;
     FMTChunk fmt_;
-    template <typename T>
-    void write_bytes(std::ofstream& file, const T& value) const;
-
 public:
     static const int defaultSampleRate = 44100;
     WavFile(int sampleRate = defaultSampleRate);

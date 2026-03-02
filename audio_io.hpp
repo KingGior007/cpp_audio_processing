@@ -1,5 +1,4 @@
-#ifndef AUDIO_IO_HPP
-#define AUDIO_IO_HPP
+#pragma once
 
 #include <fstream>
 #include <vector>
@@ -122,5 +121,3 @@ public:
         return true;
     }
 };
-
-#endif // AUDIO_IO_HPP

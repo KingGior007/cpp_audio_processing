@@ -51,7 +51,7 @@ size_t DataChunk::size() const {
 }
 
 // ---- WavFile ----
-WavFile::WavFile(int sampleRate) : data_(), fmt_(sampleRate), sampleRate_(sampleRate) {}
+WavFile::WavFile(int sampleRate) : sampleRate_(sampleRate), data_(), fmt_(sampleRate) {}
 
 void WavFile::addSample(const int16_t& sample) { data_.addSample(sample); }
 void WavFile::addSamples(const std::vector<int16_t>& samples) { data_.addSamples(samples); }
